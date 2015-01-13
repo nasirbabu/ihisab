@@ -19,6 +19,7 @@ class User extends CActiveRecord {
 
     public $status;
     public $title;
+    public $passwordConfirm;
 
     /**
      * Returns the static model of the specified AR class.
@@ -49,14 +50,15 @@ class User extends CActiveRecord {
             array('username', 'length', 'max' => 150),
             array('username', 'unique'),
             array('email', 'unique'),
-            array('email, password, activation', 'length', 'max' => 100),
+            array('email, password, passwordConfirm, activation', 'length', 'max' => 100),
             array('registerDate, lastvisitDate, user_type', 'safe'),
-            array('name', 'ext.alpha', 'allowNumbers' => true, 'allowSpaces' => true, 'minChars' => 3, 'extra' => array('.', '-', "'", '"', ':'), 'message' => 'Not valid. Non alpha-numeric characters (like @,#,$,_ etc.) are not allowed'),
+            array('name', 'ext.alpha', 'allowNumbers' => true, 'allowSpaces' => true, 'minChars' => 3, 'extra' => array('.', '-', "'", '"', ':'), 'message' => 'Name not valid. Non alpha-numeric characters (like @,#,$,_ etc.) are not allowed'),
             array('username', 'ext.alpha', 'allowNumbers' => true, 'extra' => array('.', '-', '_', "'", '"', ':'), 'minChars' => 3, 'message' => 'User name not valid'),
             array('email', 'email', 'checkMX' => true),
+            array('passwordConfirm', 'compare', 'compareAttribute' => 'password', 'message' => "Confirm password is incorrect."),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, name, username, email, password, registerDate, lastvisitDate, activation,group_id,status,title', 'safe', 'on' => 'search'),
+            array('id, name, username, email, password, passwordConfirm, registerDate, lastvisitDate, activation,group_id,status,title', 'safe', 'on' => 'search'),
         );
     }
 
@@ -82,6 +84,7 @@ class User extends CActiveRecord {
             'username' => 'Username',
             'email' => 'Email',
             'password' => 'Password',
+            'passwordConfirm' => 'Confirm password',
             'registerDate' => 'Joined',
             'lastvisitDate' => 'Last Online',
             'activation' => 'Activation',
@@ -176,6 +179,32 @@ class User extends CActiveRecord {
             echo Yii::app()->user->getFlash('error');
             echo '</div>';
         }
+    }
+
+    /**
+     * Send mail method
+     */
+    public static function sendMail($to, $subject, $message, $fromName, $fromMail) {
+        $headers = "From: " . $fromName . "<" . $fromMail . "> \r\nX-Mailer: php\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/html; charset=utf-8\r\n";
+        $message = wordwrap($message, 70);
+        $message = str_replace("\n.", "\n..", $message);
+        return mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $message, $headers);
+    }
+
+    /**
+     * Send mail BCC method
+     */
+    public static function sendMailBCC($to, $subject, $message, $fromName, $fromMail, $bccList) {
+        $headers = "From: " . $fromName . "<" . $fromMail . "> \r\nX-Mailer: php\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/html; charset=utf-8\r\n";
+        $headers .= "Bcc: $bccList\r\n";
+        $to = $fromMail;
+        $message = wordwrap($message, 70);
+        $message = str_replace("\n.", "\n..", $message);
+        return mail($to, '=?UTF-8?B?' . base64_encode($subject) . '?=', $message, $headers);
     }
 
 }

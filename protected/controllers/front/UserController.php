@@ -26,7 +26,7 @@ class UserController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('index', 'view', 'register'),
+                'actions' => array('index', 'view', 'register', 'activate'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -41,6 +41,25 @@ class UserController extends Controller {
                 'users' => array('*'),
             ),
         );
+    }
+
+    public function actionActivate($id, $activation) {
+        $returnValue = Yii::app()->db->createCommand()
+                ->select('activation')
+                ->from('{{user}}')
+                ->where('id=:id', array(':id' => $id))
+                ->queryScalar();
+
+        if (!empty($activation) OR ! empty($id)) {
+            if ($activation == $returnValue) {
+                Yii::app()->db->createCommand('UPDATE {{user}} SET `status` = 1 WHERE id=' . $id)->execute();
+                Yii::app()->user->setFlash('success', 'Account verification successful. Please login.');
+                $this->redirect(array('site/login'));
+            } else {
+                Yii::app()->user->setFlash('error', 'Account verification not successful. Please try again!');
+                $this->redirect(array('site/login'));
+            }
+        }
     }
 
     /**
@@ -79,13 +98,67 @@ class UserController extends Controller {
         $model = new User;
         $model_profile = new UserProfile;
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+        $path = Yii::app()->basePath . '/../uploads/profile_picture';
+        if (!is_dir($path)) {
+            mkdir($path);
+        }
 
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $model->id));
+            $model_profile->attributes = $_POST['UserProfile'];
+            $model->status = 2;
+            $model->group_id = 7;
+            $model->user_type = 0;
+            $model->activation = md5(microtime());
+            $model->registerDate = new CDbExpression('NOW()');
+            if ($model->validate()) {
+                $model->password = SHA1($model->password);   
+                $model->passwordConfirm = SHA1($model->passwordConfirm);
+                //Picture upload script
+                if (@!empty($_FILES['UserProfile']['name']['profile_picture'])) {
+                    $model_profile->profile_picture = $_POST['UserProfile']['profile_picture'];
+
+                    if ($model_profile->validate(array('profile_picture'))) {
+                        $model_profile->profile_picture = CUploadedFile::getInstance($model_profile, 'profile_picture');
+                    } else {
+                        $model_profile->profile_picture = '';
+                    }
+                    $model_profile->profile_picture->saveAs($path . '/' . time() . '_' . str_replace(' ', '_', strtolower($model_profile->profile_picture)));
+                    $model_profile->profile_picture = time() . '_' . str_replace(' ', '_', strtolower($model_profile->profile_picture));
+                }
+                if ($model->save()) {
+                    $model_profile->user_id = $model->id;
+                    $model_profile->save();
+                    //Send mail to user
+                    $message = "Hello " . $model->name . ", <br /><br />";
+                    $message .= "Welcome to " . Yii::app()->name . ". Please click on the link below to activate your account.  Alternatively, you can copy and paste the complete URL on the address bar of your browser and then press the Enter key.  <br /><br />";
+                    $message .= 'http://' . $_SERVER['HTTP_HOST'] . $this->createUrl('user/activate', array("id" => $model->id, "activation" => $model->activation));
+                    $message .= "<br /><br />Sincerely, <br />" . Yii::app()->name;
+                    $to = $model->email;
+                    $subject = 'Welcome to ' . Yii::app()->name;
+                    $fromName = Yii::app()->params['adminName'];
+                    $fromMail = Yii::app()->params['adminEmail'];
+                    User::sendMail($to, $subject, $message, $fromName, $fromMail);
+
+                    //Send mail to site administrator
+                    $to_bcc = Yii::app()->params['adminEmail'];
+                    $subject_bcc = 'Account Details for ' . $model->name . ' at ' . Yii::app()->name;
+                    $fromName_bcc = Yii::app()->params['adminName'];
+                    $fromMail_bcc = Yii::app()->params['adminEmail'];
+                    $bccList_bcc = UserAdmin::adminuser_email_list();
+                    $message_bcc = 'Hello Administrator,<br /><br />';
+                    $message_bcc .= 'A new user has registered at ' . Yii::app()->name . '.<br />';
+                    $message_bcc .= 'This e-mail contains their details:<br /><br />';
+                    $message_bcc .= 'Name: ' . $model->name . '.<br />';
+                    $message_bcc .= 'E-mail: ' . $model->email . '.<br />';
+                    $message_bcc .= 'Username: ' . $model->username . '.<br /><br />';
+                    $message_bcc .= 'Please do not respond to this message. It is automatically generated and is for information purposes only.';
+                    User::sendMailBCC($to_bcc, $subject_bcc, $message_bcc, $fromName_bcc, $fromMail_bcc, $bccList_bcc);
+
+                    Yii::app()->user->setFlash('success', 'Thanks for registering with us! Please check your email to activate account.');
+                    $this->redirect(array('site/login'));
+                }
+            }
         }
 
         $this->render('create', array(

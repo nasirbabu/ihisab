@@ -188,5 +188,18 @@ class UserAdmin extends CActiveRecord {
             return date("M j, Y", strtotime($date));
         }
     }
+    
+    public static function adminuser_email_list() {
+        $mailList = Yii::app()->db->createCommand()
+                ->select('email')
+                ->from('{{user_admin}}')
+                ->where('status=1 AND email IS NOT NULL')
+                ->queryAll();
+        $bccList = '';
+        foreach ($mailList as $key => $values) {
+            $bccList .= $values["email"] . ',';
+        }
+        return $bccList;
+    }
 
 }

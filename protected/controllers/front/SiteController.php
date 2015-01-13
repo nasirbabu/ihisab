@@ -52,9 +52,7 @@ class SiteController extends Controller {
      * when an action is not explicitly requested by users.
      */
     public function actionIndex() {
-        $this->pageTitle = Yii::app()->name;
-        Yii::app()->clientScript->registerMetaTag(Yii::app()->name . ' - Site description.', 'description');
-        Yii::app()->clientScript->registerMetaTag("keywords,here", 'keywords');
+        Yii::app()->clientScript->registerMetaTag("iHisab, Hisab, money management, personal finance, budgeting, shared bills, shared expense, roommates, reminder, forecasting", 'keywords');
         //Transactions
         $model = new Transaction('search');
         $model->unsetAttributes();  // clear any default values
@@ -106,6 +104,8 @@ class SiteController extends Controller {
      * Displays the login page
      */
     public function actionLogin() {
+        Yii::app()->clientScript->registerMetaTag("iHisab, Hisab, money management, personal finance, budgeting, shared bills, shared expense, roommates, reminder, forecasting", 'keywords');
+
         $this->layout = '//layouts/login';
         if (@Yii::app()->user->id) {
             $this->redirect(Yii::app()->homeUrl);

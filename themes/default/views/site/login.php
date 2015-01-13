@@ -3,7 +3,7 @@
 /* @var $model LoginForm */
 /* @var $form CActiveForm  */
 
-$this->pageTitle = 'Sign in - ' . Yii::app()->name;
+$this->pageTitle = 'Online money management software for personal finance, account aggregation, budgeting, bill reminders, forecasting and splitting bills with friends - ' . Yii::app()->name;
 ?>
 <div id="content" class="container">
     <div class="row">

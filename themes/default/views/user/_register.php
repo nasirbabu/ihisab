@@ -13,7 +13,6 @@ $form = $this->beginWidget('CActiveForm', array(
 <header>
     Registration is FREE*
 </header>
-
 <fieldset>
     <div class="row">
         <section class="col col-12">
@@ -38,7 +37,7 @@ $form = $this->beginWidget('CActiveForm', array(
     </section>
     <section>
         <label class="input"> <i class="icon-append fa fa-lock"></i>
-            <input type="password" name="passwordConfirm" placeholder="Confirm password">
+            <?php echo $form->passwordField($model, 'passwordConfirm', array('placeholder' => 'Confirm password')); ?>
             <b class="tooltip tooltip-bottom-right">Don't forget your password</b> </label>
     </section>
 </fieldset>
