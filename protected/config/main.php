@@ -52,10 +52,10 @@ return array(
         ),
         // uncomment the following to use a MySQL database
         'db' => array(
-            'connectionString' => 'mysql:host=localhost;dbname=ihisab_hisab',
+            'connectionString' => 'mysql:host=localhost;dbname=ihisab',
             'emulatePrepare' => true,
-            'username' => 'ihisab_hisab',
-            'password' => 'NX8M2s%yu5DB',
+            'username' => 'root',
+            'password' => '',
             'charset' => 'utf8',
             'tablePrefix' => 'os_'
         ),
