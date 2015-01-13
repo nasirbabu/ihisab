@@ -128,7 +128,7 @@ class SiteController extends Controller {
                 $audit->user_type = 0;
                 $audit->login_time = new CDbExpression('NOW()');
                 $audit->save();
-                Yii::app()->user->setFlash('success', 'Welcome in the <strong>' . CHtml::encode(Yii::app()->name) . '</strong>. Don\'t forget to <strong>Logout</strong> when finish!');
+                Yii::app()->user->setFlash('success', 'Welcome to the wonderful world of <strong>' . CHtml::encode(Yii::app()->name) . '</strong>. With advanced features you will definitely have a great experience of using <strong>' . CHtml::encode(Yii::app()->name) . '</strong>.');
                 $this->redirect(Yii::app()->user->returnUrl);
             }
         }

@@ -19,6 +19,11 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
+Yii::app()->clientScript->registerScript('reload-pageSetUp', "
+    function reloadPageSetUp() {
+        pageSetUp();
+    }
+    ", CClientScript::POS_END);
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -33,22 +38,19 @@ $('.search-form form').submit(function(){
     <div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
         <ul id="sparks" class="">
             <li class="sparks-info">
-                <h5> My Income <span class="txt-color-blue">$47,171</span></h5>
-                <div class="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
-                    1300, 1877, 2500, 2577, 2000, 2100, 3000, 2700, 3631, 2471, 2700, 3631, 2471
-                </div>
+                <h5> NET WORTH <?php echo Transaction::get_net_worth(); ?></h5>
             </li>
             <li class="sparks-info">
-                <h5> Site Traffic <span class="txt-color-purple"><i class="fa fa-arrow-circle-up" data-rel="bootstrap-tooltip" title="Increased"></i>&nbsp;45%</span></h5>
-                <div class="sparkline txt-color-purple hidden-mobile hidden-md hidden-sm">
-                    110,150,300,130,400,240,220,310,220,300, 270, 210
-                </div>
+                <h5> BUDGET BALANCE <span class="txt-color-purple"><i class="fa-fw fa fa-plus"></i>&nbsp;00.00</span></h5>
             </li>
             <li class="sparks-info">
-                <h5> Site Orders <span class="txt-color-greenDark"><i class="fa fa-shopping-cart"></i>&nbsp;2447</span></h5>
-                <div class="sparkline txt-color-greenDark hidden-mobile hidden-md hidden-sm">
-                    110,150,300,130,400,240,220,310,220,300, 270, 210
-                </div>
+                <h5> INCOME THIS MONTH <?php echo Transaction::get_income_current_month(); ?></h5>
+            </li>
+            <li class="sparks-info">
+                <h5> EXPENSE THIS MONTH <?php echo Transaction::get_expense_current_month(); ?></h5>
+            </li>
+            <li class="sparks-info">
+                <h5> SAVED THIS MONTH <?php echo Transaction::get_saved_current_month(); ?></h5>
             </li>
         </ul>
     </div>
@@ -75,6 +77,7 @@ $('.search-form form').submit(function(){
                             'dataProvider' => $model->search(),
                             'filter' => $model,
                             //'enableSorting' => false,
+                            'afterAjaxUpdate' => 'reloadPageSetUp',
                             'htmlOptions' => array('class' => ''),
                             'itemsCssClass' => 'datatables table table-bordered table-striped table-hover smart-form',
                             'template' => '{items}{pager}',
@@ -93,7 +96,8 @@ $('.search-form form').submit(function(){
                                     'name' => 'parent_tag',
                                     'type' => 'raw',
                                     'value' => 'Tag::get_tag($data->parent_tag)',
-                                    'htmlOptions' => array('style' => "text-align:left;", 'title' => 'Tag Name'),
+                                    'filter' => Tag::get_tag_new('Tag', 'parent_tag'),
+                                    'htmlOptions' => array('style' => "text-align:left;", 'title' => 'Parent Tag'),
                                 ),
                                 array(
                                     'name' => 'tag_name',
@@ -101,18 +105,6 @@ $('.search-form form').submit(function(){
                                     'value' => '$data->tag_name',
                                     'filter' => CHtml::activeTextField($model, 'tag_name', array('class' => 'form-control')),
                                     'htmlOptions' => array('style' => "text-align:left;", 'title' => 'Tag'),
-                                ),
-                                array(
-                                    'name' => 'created',
-                                    'type' => 'raw',
-                                    'value' => 'UserAdmin::get_date($data->created)',
-                                    'htmlOptions' => array('style' => "text-align:left;", 'title' => 'Created'),
-                                ),
-                                array(
-                                    'name' => 'modified',
-                                    'type' => 'raw',
-                                    'value' => 'UserAdmin::get_date($data->modified)',
-                                    'htmlOptions' => array('style' => "text-align:left;", 'title' => 'Modified'),
                                 ),
                                 array(
                                     'header' => '',

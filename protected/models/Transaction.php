@@ -151,4 +151,76 @@ class Transaction extends CActiveRecord {
         }
     }
 
+    public static function get_income_current_month() {
+        $balance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH(NOW())')
+                ->queryScalar();
+
+        $balance = abs($balance);
+        $amount = number_format($balance, 2, '.', ',');
+        return '<span class="txt-color-blue"><i class="fa-fw fa fa-plus"></i> ' . $amount . '</span>';
+    }
+
+    public static function get_expense_current_month() {
+        $balance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH(NOW())')
+                ->queryScalar();
+
+        $balance = abs($balance);
+        $amount = number_format($balance, 2, '.', ',');
+        return '<span class="txt-color-red"><i class="fa-fw fa fa-minus"></i> ' . $amount . '</span>';
+    }
+
+    public static function get_saved_current_month() {
+        $income = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH(NOW())')
+                ->queryScalar();
+
+        $expance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH(NOW())')
+                ->queryScalar();
+        $balance = $income - $expance;
+
+        if ($balance < 0) {
+            $balance = abs($balance);
+            $amount = number_format($balance, 2, '.', ',');
+            return '<span class="txt-color-red"><i class="fa-fw fa fa-minus"></i> ' . $amount . '</span>';
+        } else {
+            $amount = number_format($balance, 2, '.', ',');
+            return '<span class="txt-color-blue"><i class="fa-fw fa fa-plus"></i> ' . $amount . '</span>';
+        }
+    }
+    
+    public static function get_net_worth() {
+        $income = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4)')
+                ->queryScalar();
+
+        $expance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1)')
+                ->queryScalar();
+        $balance = $income - $expance;
+
+        if ($balance < 0) {
+            $balance = abs($balance);
+            $amount = number_format($balance, 2, '.', ',');
+            return '<span class="txt-color-red"><i class="fa-fw fa fa-minus"></i> ' . $amount . '</span>';
+        } else {
+            $amount = number_format($balance, 2, '.', ',');
+            return '<span class="txt-color-blue"><i class="fa-fw fa fa-plus"></i> ' . $amount . '</span>';
+        }
+    }
+
 }
