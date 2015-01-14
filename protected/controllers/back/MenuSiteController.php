@@ -77,7 +77,8 @@ class MenuSiteController extends BackEndController {
             $model->attributes = $_POST['MenuSite'];
             $model->group = implode(",", (array) $model->attributes['group']);
             if ($model->save()) {
-                $this->redirect(array('view', 'id' => $model->id));
+                Yii::app()->user->setFlash('success', 'Menue was saved successfully');
+                $this->redirect(array('admin'));
             }
         }
 
@@ -101,7 +102,8 @@ class MenuSiteController extends BackEndController {
             $model->attributes = $_POST['MenuSite'];
             $model->group = implode(",", (array) $model->attributes['group']);
             if ($model->save()) {
-                $this->redirect(array('view', 'id' => $model->id));
+                Yii::app()->user->setFlash('success', 'Menue was saved successfully');
+                $this->redirect(array('admin'));
             }
         }
         if (isset($model->group))
