@@ -38,7 +38,9 @@
     <body class="animated fadeInDown">
         <header id="header">
             <div id="logo-group">
-                <h1 class="login-header-big"><i class="fa fa-2x fa-bank "></i> <?php echo CHtml::encode(Yii::app()->name); ?></h1>
+                <span id="logo"> 
+                    <?php Banner::get_site_logo(1); ?> 
+                </span>
             </div>            
             <span id="extr-page-header-space"> 
                 <span class="hidden-mobile">Need an account?</span> 

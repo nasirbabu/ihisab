@@ -26,14 +26,22 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
     </div>
 </div>
 <?php echo $form->textFieldControlGroup($model, 'clickurl', array('class' => 'span5', 'maxlength' => 200)); ?>
-<?php echo $form->labelEx($model, 'description'); ?>
-<?php
-$this->widget('application.extensions.xheditor.JXHEditor', array(
-    'model' => $model,
-    'attribute' => 'description',
-    'htmlOptions' => array('class' => 'xheditor-simple span6', 'style' => 'height: 150px;'),
-));
-?>
+<div class="control-group">
+    <label for="form-field-1" class="control-label"><?php echo $form->labelEx($model, 'description'); ?></label>
+    <div class="controls">
+        <?php
+        $this->widget('application.extensions.yii-ckeditor.CKEditorWidget', array(
+            'model' => $model,
+            'attribute' => 'description',
+            // editor options http://docs.ckeditor.com/#!/api/CKEDITOR.config
+            'config' => array(
+                'language' => 'en',
+            //'toolbar' => 'Basic',
+            ),
+        ));
+        ?>
+    </div>
+</div>
 <div class="row-fluid">
     <div class="span2">
         <?php echo $form->textFieldControlGroup($model, 'ordering', array('class' => 'span12')); ?>

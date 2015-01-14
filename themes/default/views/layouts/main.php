@@ -41,7 +41,9 @@
         <header id="header">
             <div id="logo-group">
                 <!-- PLACE YOUR LOGO HERE -->
-                <span id="logo"> <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="SmartAdmin"> </span>
+                <span id="logo"> 
+                    <?php Banner::get_site_logo(1); ?> 
+                </span>
                 <!-- END LOGO PLACEHOLDER -->
                 <!-- Note: The activity badge color changes when clicked and resets the number to 0
                          Suggestion: You may want to set a flag when this happens to tick off all checked messages / notifications -->

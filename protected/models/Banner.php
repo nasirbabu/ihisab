@@ -154,4 +154,19 @@ class Banner extends CActiveRecord {
         return $returnValue;
     }
 
+    public static function get_site_logo($catid) {
+        $array = Yii::app()->db->createCommand()
+                ->select('*')
+                ->from('{{banner}}')
+                ->where('published=1 AND catid=' . $catid)
+                ->order('created_on DESC')
+                ->limit('1')
+                ->queryAll();
+
+        foreach ($array as $key => $values) {
+            $banner = CHtml::image(Yii::app()->baseUrl . '/uploads/banners/' . $values['banner'], Yii::app()->name, array('class' => '', 'title' => Yii::app()->name));
+            echo CHtml::link($banner, $values['clickurl'], array());
+        }
+    }
+
 }
