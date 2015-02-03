@@ -144,17 +144,17 @@ class Account extends CActiveRecord {
         if ($total > 1) {
             for ($i = 0; $i < $total; $i++) {
                 if ($i == 0) {
-                    $tags .= '<span class="account_text">' . Account::get_account($exval[$i]) . '</span> <i class="fa fa-long-arrow-right "></i> ';
-                    //$tags .= CHtml::link(Account::get_account($exval[$i]), array('transaction/account', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Account::get_account($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Account::get_account($exval[$i]), 'class' => 'account_text')) . ' <i class="fa fa-long-arrow-right "></i> ';
+                    //$tags .= '<span class="account_text">' . Account::get_account($exval[$i]) . '</span> <i class="fa fa-long-arrow-right "></i> ';
+                    $tags .= CHtml::link(Account::get_account($exval[$i]), array('transaction/account', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Account::get_account($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Account::get_account($exval[$i]), 'class' => 'account_text')) . ' <i class="fa fa-long-arrow-right "></i> ';
                 } else {
-                    $tags .= '<span class="account_text">' . Account::get_account($exval[$i]) . '</span>';
-                    //$tags .= CHtml::link(Account::get_account($exval[$i]), array('transaction/account', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Account::get_account($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Account::get_account($exval[$i]), 'class' => 'account_text'));
+                    //$tags .= '<span class="account_text">' . Account::get_account($exval[$i]) . '</span>';
+                    $tags .= CHtml::link(Account::get_account($exval[$i]), array('transaction/account', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Account::get_account($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Account::get_account($exval[$i]), 'class' => 'account_text'));
                 }
             }
         } else {
             for ($i = 0; $i < $total; $i++) {
-                $tags .= '<span class="account_text">' . Account::get_account($exval[$i]) . '</span>';
-                //$tags .= CHtml::link(Account::get_account($exval[$i]), array('transaction/account', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Account::get_account($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Account::get_account($exval[$i]), 'class' => 'account_text')) . ' ';
+                //$tags .= '<span class="account_text">' . Account::get_account($exval[$i]) . '</span>';
+                $tags .= CHtml::link(Account::get_account($exval[$i]), array('transaction/account', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Account::get_account($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Account::get_account($exval[$i]), 'class' => 'account_text')) . ' ';
             }
         }
 

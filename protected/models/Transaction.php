@@ -119,7 +119,65 @@ class Transaction extends CActiveRecord {
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
             'pagination' => array(
-                'pageSize' => Yii::app()->params['pageSize'],
+                'pageSize' => Yii::app()->params['pageSize50'],
+            ),
+            'sort' => array('defaultOrder' => 't.created DESC, t.id DESC'),
+        ));
+    }
+
+    public function search_tag($tag) {
+        // @todo Please modify the following code to remove attributes that should not be searched.
+
+        $criteria = new CDbCriteria;
+        $criteria->alias = 't';
+        $criteria->condition = 'FIND_IN_SET(' . $tag . ', t.tag)>0 AND t.user=' . Yii::app()->user->id;
+
+        $criteria->compare('t.id', $this->id, true);
+        $criteria->compare('t.user', $this->user);
+        $criteria->compare('t.description', $this->description, true);
+        $criteria->compare('t.amount', $this->amount, true);
+        $criteria->compare('t.created', $this->created, true);
+        $criteria->compare('t.modified', $this->modified, true);
+        $criteria->compare('t.transaction_type', $this->transaction_type);
+        $criteria->compare('t.account', $this->account);
+        $criteria->compare('t.tag', $this->tag, true);
+        $criteria->compare('t.group', $this->group);
+        $criteria->compare('t.status', $this->status);
+        $criteria->compare('t.notes', $this->notes, true);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+            'pagination' => array(
+                'pageSize' => Yii::app()->params['pageSize50'],
+            ),
+            'sort' => array('defaultOrder' => 't.created DESC, t.id DESC'),
+        ));
+    }
+
+    public function search_account($account) {
+        // @todo Please modify the following code to remove attributes that should not be searched.
+
+        $criteria = new CDbCriteria;
+        $criteria->alias = 't';
+        $criteria->condition = 'FIND_IN_SET(' . $account . ', t.account)>0 AND t.user=' . Yii::app()->user->id;
+
+        $criteria->compare('t.id', $this->id, true);
+        $criteria->compare('t.user', $this->user);
+        $criteria->compare('t.description', $this->description, true);
+        $criteria->compare('t.amount', $this->amount, true);
+        $criteria->compare('t.created', $this->created, true);
+        $criteria->compare('t.modified', $this->modified, true);
+        $criteria->compare('t.transaction_type', $this->transaction_type);
+        $criteria->compare('t.account', $this->account);
+        $criteria->compare('t.tag', $this->tag, true);
+        $criteria->compare('t.group', $this->group);
+        $criteria->compare('t.status', $this->status);
+        $criteria->compare('t.notes', $this->notes, true);
+
+        return new CActiveDataProvider($this, array(
+            'criteria' => $criteria,
+            'pagination' => array(
+                'pageSize' => Yii::app()->params['pageSize50'],
             ),
             'sort' => array('defaultOrder' => 't.created DESC, t.id DESC'),
         ));
@@ -155,7 +213,7 @@ class Transaction extends CActiveRecord {
         $balance = Yii::app()->db->createCommand()
                 ->select('IFNULL(SUM(amount),0)')
                 ->from('{{transaction}}')
-                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH(NOW())')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH(NOW()) AND YEAR(created) = YEAR(NOW())')
                 ->queryScalar();
 
         $balance = abs($balance);
@@ -167,7 +225,7 @@ class Transaction extends CActiveRecord {
         $balance = Yii::app()->db->createCommand()
                 ->select('IFNULL(SUM(amount),0)')
                 ->from('{{transaction}}')
-                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH(NOW())')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH(NOW()) AND YEAR(created) = YEAR(NOW())')
                 ->queryScalar();
 
         $balance = abs($balance);
@@ -179,13 +237,13 @@ class Transaction extends CActiveRecord {
         $income = Yii::app()->db->createCommand()
                 ->select('IFNULL(SUM(amount),0)')
                 ->from('{{transaction}}')
-                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH(NOW())')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH(NOW()) AND YEAR(created) = YEAR(NOW())')
                 ->queryScalar();
 
         $expance = Yii::app()->db->createCommand()
                 ->select('IFNULL(SUM(amount),0)')
                 ->from('{{transaction}}')
-                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH(NOW())')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH(NOW()) AND YEAR(created) = YEAR(NOW())')
                 ->queryScalar();
         $balance = $income - $expance;
 
@@ -198,7 +256,7 @@ class Transaction extends CActiveRecord {
             return '<span class="txt-color-blue"><i class="fa-fw fa fa-plus"></i> ' . $amount . '</span>';
         }
     }
-    
+
     public static function get_net_worth() {
         $income = Yii::app()->db->createCommand()
                 ->select('IFNULL(SUM(amount),0)')

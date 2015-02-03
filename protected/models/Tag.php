@@ -132,8 +132,8 @@ class Tag extends CActiveRecord {
             $total = count($exval);
             $total_minus = ($total - 1);
             for ($i = 0; $i < $total; $i++) {
-                $tags .= '<span class="label label-warning">' . Tag::get_tag($exval[$i]) . '</span> ';
-                //$tags .= CHtml::link(Tag::get_tag($exval[$i]), array('transaction/tag', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Tag::get_tag($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Tag::get_tag($exval[$i]), 'class' => 'btn btn-xs btn-info')) . ' ';
+                //$tags .= '<span class="label label-warning">' . Tag::get_tag($exval[$i]) . '</span> ';
+                $tags .= CHtml::link(Tag::get_tag($exval[$i]), array('transaction/tag', 'id' => $exval[$i]), array('data-placement' => 'bottom', 'title' => Tag::get_tag($exval[$i]), 'rel' => 'tooltip', 'data-original-title' => Tag::get_tag($exval[$i]), 'class' => 'btn btn-xs btn-info')) . ' ';
             }
         } else {
             $tags = null;

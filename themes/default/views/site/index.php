@@ -69,7 +69,10 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
             <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
                 <header>
                     <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
-                    <h2>Transactions</h2>                    
+                    <h2>Transactions</h2>       
+                    <div class="widget-toolbar">
+                        <?php echo CHtml::link('<i class="fa fa-plus"></i>', array('transaction/create'), array('data-placement' => 'bottom', 'title' => '', 'rel' => 'tooltip', 'data-original-title' => 'Add Transaction')); ?>
+                    </div>
                 </header>
                 <!-- widget div-->
                 <div>

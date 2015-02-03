@@ -1,7 +1,7 @@
 <?php
 /* @var $this TransactionController */
 /* @var $model Transaction */
-$this->pageTitle = 'Transactions - ' . Yii::app()->name;
+$this->pageTitle = 'Transactions (' . Account::get_account($_REQUEST['id']) . ') - ' . Yii::app()->name;
 $this->breadcrumbs = array(
     'Transactions' => array('admin'),
     'Manage',
@@ -17,14 +17,6 @@ Yii::app()->clientScript->registerScript('search', "
                 data: $(this).serialize()
         });
         return false;
-    });
-    $('#addMultiple').on('show.bs.modal', function () {
-        $('.modal .modal-body').css('overflow-y', 'auto');
-        $('.modal .modal-body').css('max-height', $(window).height() * 0.9);
-    });
-    $('#addSingle').on('show.bs.modal', function () {
-        $('.modal .modal-body').css('overflow-y', 'auto');
-        $('.modal .modal-body').css('max-height', $(window).height() * 0.9);
     });
     ", CClientScript::POS_END);
 Yii::app()->clientScript->registerScript('re-install-date-picker', "
@@ -46,7 +38,7 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-table fa-fw "></i> 
-            Transactions 
+            Transactions
             <span>> 
                 Manage
             </span>
@@ -83,7 +75,7 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
             <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
                 <header>
                     <span class="widget-icon"> <i class="fa fa-tasks"></i> </span>
-                    <h2>Transactions</h2>
+                    <h2>Transactions, Account: <?php echo Account::get_account($_REQUEST['id']); ?></h2>
                     <div class="widget-toolbar">
                         <?php echo CHtml::link('<i class="fa fa-plus"></i>', array('transaction/create'), array('data-placement' => 'bottom', 'title' => '', 'rel' => 'tooltip', 'data-original-title' => 'Add Transaction')); ?>
                     </div>
@@ -95,7 +87,7 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
                         <?php
                         $this->widget('zii.widgets.grid.CGridView', array(
                             'id' => 'transaction-grid',
-                            'dataProvider' => $model->search(),
+                            'dataProvider' => $model->search_account($_REQUEST['id']),
                             'filter' => $model,
                             //'enableSorting' => false,
                             'afterAjaxUpdate' => 'reinstallDatePicker',
@@ -172,8 +164,6 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
                         <!-- widget footer -->
                         <div class="widget-footer">                            	
                             <?php echo CHtml::link('<span class="btn-label"><i class="fa fa-plus"></i></span> Add Transaction', array('transaction/create'), array('class' => 'btn btn-labeled btn-success')); ?>
-                            <?php //echo CHtml::link('<span class="btn-label"><i class="fa fa-plus"></i></span> Add Multiple Transactions', array('transaction/multiple'), array('data-toggle' => 'modal', 'data-target' => '#addMultiple', 'class' => 'btn btn-labeled btn-success')); ?>
-                            <?php //echo CHtml::link('<span class="btn-label"><i class="fa fa-plus"></i></span> Add Single Transaction', array('transaction/single'), array('data-toggle' => 'modal', 'data-target' => '#addSingle', 'class' => 'btn btn-labeled btn-success')); ?>
                         </div>
                         <!-- end widget footer -->
                     </div>
@@ -188,18 +178,6 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
     <!-- end row -->
 </section>
 <!-- end widget grid -->
-<div class="modal fade" id="addMultiple" role="dialog" aria-labelledby="addMultipleLabel" aria-hidden="true">
-    <div class="modal-dialog" style="width:80%;">
-        <div class="modal-content">            
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-<div class="modal fade" id="addSingle" role="dialog" aria-labelledby="addSingleLabel" aria-hidden="true">
-    <div class="modal-dialog" style="width: 60%;">
-        <div class="modal-content">            
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 <div class="modal fade" id="editTransaction" role="dialog" aria-labelledby="editTransactionLabel" aria-hidden="true">
     <div class="modal-dialog" style="width: 60%;">
         <div class="modal-content">            

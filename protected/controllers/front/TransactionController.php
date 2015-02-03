@@ -30,7 +30,7 @@ class TransactionController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'single', 'multiple', 'update', 'admin', 'delete'),
+                'actions' => array('index', 'view', 'create', 'single', 'multiple', 'update', 'admin', 'delete', 'tag', 'account'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -255,6 +255,34 @@ class TransactionController extends Controller {
             $model->attributes = $_GET['Transaction'];
 
         $this->render('admin', array(
+            'model' => $model,
+        ));
+    }
+
+    /**
+     * Transaction by TAG
+     */
+    public function actionTag() {
+        $model = new Transaction('search_tag');
+        $model->unsetAttributes();  // clear any default values
+        if (isset($_GET['Transaction']))
+            $model->attributes = $_GET['Transaction'];
+
+        $this->render('tag', array(
+            'model' => $model,
+        ));
+    }
+
+    /**
+     * Transaction by ACCOUNT
+     */
+    public function actionAccount() {
+        $model = new Transaction('search_account');
+        $model->unsetAttributes();  // clear any default values
+        if (isset($_GET['Transaction']))
+            $model->attributes = $_GET['Transaction'];
+
+        $this->render('account', array(
             'model' => $model,
         ));
     }
