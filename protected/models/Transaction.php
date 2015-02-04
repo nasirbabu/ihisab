@@ -281,4 +281,18 @@ class Transaction extends CActiveRecord {
         }
     }
 
+    public static function dashboardExpense() {
+        $array = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0) AS total, tag')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH(NOW()) AND YEAR(created) = YEAR(NOW())')
+                ->group('tag')
+                ->queryAll();
+        $return = null;
+        foreach ($array as $key => $value) {
+            $return .= "['" . Tag::get_tag($value['tag']) . "', " . $value['total'] . "],";
+        }
+        return $return;
+    }
+
 }

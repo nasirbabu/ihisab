@@ -30,6 +30,10 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
         pageSetUp();
     }
     ", CClientScript::POS_END);
+$cs = Yii::app()->getClientScript();
+$cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/highcharts.js', CClientScript::POS_END);
+$cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/highcharts-3d.js', CClientScript::POS_END);
+$cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/exporting.js', CClientScript::POS_END);
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -95,7 +99,7 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
                         <!-- content -->
                         <div id="myTabContent" class="tab-content">
                             <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
-
+                                <div id="expenseChart" style="height: 400px"></div>
                             </div>
                             <!-- end s1 tab pane -->
                             <div class="tab-pane fade" id="s2">
@@ -103,11 +107,11 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
                             </div>
                             <!-- end s2 tab pane -->
                             <div class="tab-pane fade" id="s3">
-                                
+
                             </div>
                             <!-- end s3 tab pane -->
                             <div class="tab-pane fade" id="s4">
-                                
+
                             </div>
                             <!-- end s4 tab pane -->
                         </div>
@@ -251,3 +255,44 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<script type="text/javascript">
+    $(function () {
+        $('#expenseChart').highcharts({
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45,
+                    beta: 0
+                }
+            },
+            title: {
+                text: 'Expense in this month'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 50,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.name}: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            series: [{
+                    type: 'pie',
+                    name: 'Tag',
+                    data: [
+                    <?php echo Transaction::dashboardExpense(); ?>
+                    ]
+                }]
+        });
+    });
+</script>
