@@ -95,10 +95,9 @@ $this->pageTitle = 'Online money management software for personal finance, accou
                 <div class="col-md-12">
                     <ul class="list-inline">
                         <li><?php echo CHtml::link('HELP', array('content/view', 'id' => 3), array('class' => '')); ?></li>
-                        <li><?php echo CHtml::link('FEATURES', array('content/view', 'id' => 4), array('class' => '')); ?></li>
-                        <li><?php echo CHtml::link('PRICING', array('content/view', 'id' => 5), array('class' => '')); ?></li>
-                        <li><?php echo CHtml::link('PRIVACY', array('content/view', 'id' => 6), array('class' => '')); ?></li>
-                        <li><?php echo CHtml::link('TERMS', array('content/view', 'id' => 7), array('class' => '')); ?></li>
+                        <li><?php echo CHtml::link('PRICING', array('content/view', 'id' => 4), array('class' => '')); ?></li>
+                        <li><?php echo CHtml::link('PRIVACY', array('content/view', 'id' => 5), array('class' => '')); ?></li>
+                        <li><?php echo CHtml::link('TERMS', array('content/view', 'id' => 6), array('class' => '')); ?></li>
                     </ul>                    
                 </div>                
             </div>

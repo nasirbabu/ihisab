@@ -1,7 +1,7 @@
 <?php
 /* @var $this TransactionController */
 /* @var $model Transaction */
-$this->pageTitle = 'Transactions (' . Tag::get_tag($_REQUEST['id']) . ') - ' . Yii::app()->name;
+$this->pageTitle = Tag::get_tag($_REQUEST['id']) . ' - ' . Yii::app()->name;
 $this->breadcrumbs = array(
     'Transactions' => array('admin'),
     'Manage',
@@ -75,7 +75,7 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
             <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
                 <header>
                     <span class="widget-icon"> <i class="fa fa-tasks"></i> </span>
-                    <h2>Transactions, Tag: <?php echo Tag::get_tag($_REQUEST['id']); ?></h2>
+                    <h2><?php echo Tag::get_tag($_REQUEST['id']); ?></h2>
                     <div class="widget-toolbar">
                         <?php echo CHtml::link('<i class="fa fa-plus"></i>', array('transaction/create'), array('data-placement' => 'bottom', 'title' => '', 'rel' => 'tooltip', 'data-original-title' => 'Add Transaction')); ?>
                     </div>

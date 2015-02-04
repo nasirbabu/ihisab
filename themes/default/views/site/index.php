@@ -63,10 +63,69 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
 <section id="widget-grid" class="">
     <!-- row -->
     <div class="row">
+        <article class="col-sm-12">
+            <!-- new widget -->
+            <div class="jarviswidget" id="wid-id-0" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-darken"></i> </span>
+                    <h2>Live Feeds </h2>
+                    <ul class="nav nav-tabs pull-right in" id="myTab">
+                        <li class="active">		
+                            <a data-toggle="tab" href="#s1"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">EXPENSE</span></a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#s2"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">INCOME</span></a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#s3"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">NET WORTH</span></a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#s4"><i class="fa fa-signal"></i> <span class="hidden-mobile hidden-tablet">COMPARISON</span></a>
+                        </li>
+                    </ul>
+                </header>
+                <!-- widget div-->
+                <div class="no-padding">
+                    <!-- widget edit box -->
+                    <div class="jarviswidget-editbox">
+                        test
+                    </div>
+                    <!-- end widget edit box -->
+                    <div class="widget-body">
+                        <!-- content -->
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
+
+                            </div>
+                            <!-- end s1 tab pane -->
+                            <div class="tab-pane fade" id="s2">
+
+                            </div>
+                            <!-- end s2 tab pane -->
+                            <div class="tab-pane fade" id="s3">
+                                
+                            </div>
+                            <!-- end s3 tab pane -->
+                            <div class="tab-pane fade" id="s4">
+                                
+                            </div>
+                            <!-- end s4 tab pane -->
+                        </div>
+                        <!-- end content -->
+                    </div>
+                </div>
+                <!-- end widget div -->
+            </div>
+            <!-- end widget -->
+        </article>
+    </div>
+    <!-- end row -->
+    <!-- row -->
+    <div class="row">
         <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <!-- Widget ID (each widget will need unique ID)-->
-            <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+            <div class="jarviswidget" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
                     <h2>Transactions</h2>       
