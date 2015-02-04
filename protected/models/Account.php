@@ -195,4 +195,71 @@ class Account extends CActiveRecord {
         }
     }
 
+    public static function get_balance_chart($id) {
+        $transfer_in = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('account LIKE "' . $id . ',%" AND transaction_type=3')
+                ->queryScalar();
+        $transfer_out = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('account LIKE "%,' . $id . '" AND transaction_type=3')
+                ->queryScalar();
+        $income = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('account=' . $id . ' AND transaction_type IN(2,4)')
+                ->queryScalar();
+        $expance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('account=' . $id . ' AND transaction_type IN(1)')
+                ->queryScalar();
+        $balance = (($income - $expance) - $transfer_in + $transfer_out);
+        return number_format($balance, 2, '.', '');
+    }
+
+    public static function last_twelve_months() {
+        $return = null;
+        for ($t = 1; $t <= 12; $t++) {
+            $return .= "'" . date("M y", strtotime(date('Y-m-01') . " -$t months")) . "',";
+        }
+        return $return;
+    }
+
+    //get balance fron last day of month to previous all
+    public static function get_balance_month_year($date) {
+        $income = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND created <= "' . $date . '"')
+                ->queryScalar();
+
+        $expance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND created <= "' . $date . '"')
+                ->queryScalar();
+        $balance = $income - $expance;
+        return number_format($balance, 2, '.', '');
+    }
+
+    //get balance specific month and year
+    public static function get_balance_specific_month($date) {
+        $income = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH("' . $date . '") AND YEAR(created) = YEAR("' . $date . '")')
+                ->queryScalar();
+
+        $expance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH("' . $date . '") AND YEAR(created) = YEAR("' . $date . '")')
+                ->queryScalar();
+        $balance = $income - $expance;
+        return number_format($balance, 2, '.', '');
+    }
+
 }

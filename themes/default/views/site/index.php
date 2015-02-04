@@ -72,7 +72,7 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
             <div class="jarviswidget" id="wid-id-0" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
                 <header>
                     <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-darken"></i> </span>
-                    <h2>Live Feeds </h2>
+                    <h2>Current month overview</h2>
                     <ul class="nav nav-tabs pull-right in" id="myTab">
                         <li class="active">		
                             <a data-toggle="tab" href="#s1"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">EXPENSE</span></a>
@@ -84,7 +84,10 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
                             <a data-toggle="tab" href="#s3"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">NET WORTH</span></a>
                         </li>
                         <li>
-                            <a data-toggle="tab" href="#s4"><i class="fa fa-signal"></i> <span class="hidden-mobile hidden-tablet">COMPARISON</span></a>
+                            <a data-toggle="tab" href="#s4"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">BUDGETS</span></a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#s5"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">BALANCE</span></a>
                         </li>
                     </ul>
                 </header>
@@ -103,15 +106,19 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
                             </div>
                             <!-- end s1 tab pane -->
                             <div class="tab-pane fade" id="s2">
-
+                                <div id="incomeChart" style="height: 400px"></div>
                             </div>
                             <!-- end s2 tab pane -->
                             <div class="tab-pane fade" id="s3">
-
+                                <div id="netWorthChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
                             </div>
                             <!-- end s3 tab pane -->
                             <div class="tab-pane fade" id="s4">
 
+                            </div>
+                            <!-- end s4 tab pane -->
+                            <div class="tab-pane fade" id="s5">
+                                <div id="balanceChart" style="height: 400px"></div>
                             </div>
                             <!-- end s4 tab pane -->
                         </div>
@@ -270,7 +277,7 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
                 text: 'Expense in this month'
             },
             tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                pointFormat: '{series.name} expense <b>{point.y:,.0f}</b><br/>Percentage <b>{point.percentage:.1f}%</b>'
             },
             plotOptions: {
                 pie: {
@@ -279,9 +286,9 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
                     depth: 50,
                     dataLabels: {
                         enabled: true,
-                        format: '{point.name}: {point.percentage:.1f} %',
+                        format: '{point.name}: <b>{point.y:,.0f}</b> {point.percentage:.1f} %',
                         style: {
-                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#666'
                         }
                     }
                 }
@@ -289,9 +296,96 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
             series: [{
                     type: 'pie',
                     name: 'Tag',
-                    data: [
-                    <?php echo Transaction::dashboardExpense(); ?>
-                    ]
+                    data: [<?php echo Transaction::dashboardExpenseChart(); ?>]
+                }]
+        });
+        $('#incomeChart').highcharts({
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45,
+                    beta: 0
+                }
+            },
+            title: {
+                text: 'Income in this month'
+            },
+            tooltip: {
+                pointFormat: '{series.name} income <b>{point.y:,.0f}</b><br/>Percentage <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    depth: 50,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.name}: <b>{point.y:,.0f}</b> {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || '#666'
+                        }
+                    }
+                }
+            },
+            series: [{
+                    type: 'pie',
+                    name: 'Tag',
+                    data: [<?php echo Transaction::dashboardIncomeChart(); ?>]
+                }]
+        });
+        $('#balanceChart').highcharts({
+            chart: {
+                type: 'pie',
+                options3d: {
+                    enabled: true,
+                    alpha: 45
+                }
+            },
+            title: {
+                text: 'Account balance in this month'
+            },
+            plotOptions: {
+                pie: {
+                    innerSize: 100,
+                    depth: 45
+                }
+            },
+            series: [{
+                    name: 'Balance',
+                    data: [<?php echo Transaction::dashboardBalanceChart(); ?>]
+                }]
+        });
+        $('#netWorthChart').highcharts({
+            title: {
+                text: 'Net Worth Last Twelve Months',
+                x: -20 //center
+            },
+            xAxis: {
+                categories: [<?php echo Account::last_twelve_months(); ?>]
+            },
+            yAxis: {
+                title: {
+                    text: 'Amount'
+                },
+                plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: [{
+                    name: 'Net Worth',
+                    data: [<?php echo Transaction::accountWorthComparisonChart(); ?>]
                 }]
         });
     });
