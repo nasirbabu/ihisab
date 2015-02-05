@@ -116,7 +116,7 @@ if ($model->transaction_type == 3) {
                 <?php echo $form->labelEx($model, 'group'); ?>
             </label>
             <div class="col-md-4">
-                <?php echo $form->dropDownList($model, 'group', CHtml::listData(TransactionGroup::model()->findAll(array('condition' => 'user=' . Yii::app()->user->id . ' AND status=1')), 'id', 'title'), array('empty' => 'SELECT', 'class' => 'select2')); ?>
+                <?php echo $form->dropDownList($model, 'group', CHtml::listData(TransactionGroup::model()->findAll(array('condition' => 'user=' . Yii::app()->user->id)), 'id', 'title'), array('empty' => 'SELECT', 'class' => 'select2')); ?>
                 <?php echo $form->error($model, 'group', array('class' => 'text-danger')); ?>
             </div>
         </div>

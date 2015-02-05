@@ -224,7 +224,7 @@ $this->breadcrumbs = array(
                                 <?php echo $form2->labelEx($model, 'group'); ?>
                             </label>
                             <div class="col-md-4">
-                                <?php echo $form2->dropDownList($model, 'group', CHtml::listData(TransactionGroup::model()->findAll(array('condition' => 'user=' . Yii::app()->user->id . ' AND status=1')), 'id', 'title'), array('empty' => 'SELECT', 'class' => 'select2')); ?>
+                                <?php echo $form2->dropDownList($model, 'group', CHtml::listData(TransactionGroup::model()->findAll(array('condition' => 'user=' . Yii::app()->user->id)), 'id', 'title'), array('empty' => 'SELECT', 'class' => 'select2')); ?>
                                 <?php echo $form2->error($model, 'group', array('class' => 'text-danger')); ?>
                             </div>
                         </div>
