@@ -1,21 +1,23 @@
 <?php
 
 /**
- * This is the model class for table "{{transaction_group}}".
+ * This is the model class for table "{{transaction_budget}}".
  *
- * The followings are the available columns in table '{{transaction_group}}':
+ * The followings are the available columns in table '{{transaction_budget}}':
  * @property string $id
  * @property integer $user
- * @property string $title
- * @property string $members
+ * @property string $tag_name
+ * @property string $amount
+ * @property string $created
+ * @property string $modified
  */
-class TransactionGroup extends CActiveRecord {
+class TransactionBudget extends CActiveRecord {
 
     /**
      * @return string the associated database table name
      */
     public function tableName() {
-        return '{{transaction_group}}';
+        return '{{transaction_budget}}';
     }
 
     /**
@@ -25,13 +27,14 @@ class TransactionGroup extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('user, title', 'required'),
+            array('user, tag_name', 'required'),
             array('user', 'numerical', 'integerOnly' => true),
-            array('title', 'length', 'max' => 150),
-            array('members', 'safe'),
+            array('tag_name', 'length', 'max' => 150),
+            array('amount', 'length', 'max' => 13),
+            array('created, modified', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, user, title, members', 'safe', 'on' => 'search'),
+            array('id, user, tag_name, amount, created, modified', 'safe', 'on' => 'search'),
         );
     }
 
@@ -52,8 +55,10 @@ class TransactionGroup extends CActiveRecord {
         return array(
             'id' => 'ID',
             'user' => 'User',
-            'title' => 'Group name',
-            'members' => 'Members',
+            'tag_name' => 'Tag',
+            'amount' => 'Amount',
+            'created' => 'Created On',
+            'modified' => 'Modofied On',
         );
     }
 
@@ -78,15 +83,17 @@ class TransactionGroup extends CActiveRecord {
 
         $criteria->compare('t.id', $this->id, true);
         $criteria->compare('t.user', $this->user);
-        $criteria->compare('t.title', $this->title, true);
-        $criteria->compare('t.members', $this->members, true);
+        $criteria->compare('t.tag_name', $this->tag_name, true);
+        $criteria->compare('t.amount', $this->amount, true);
+        $criteria->compare('t.created', $this->created, true);
+        $criteria->compare('t.modified', $this->modified, true);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
             'pagination' => array(
                 'pageSize' => Yii::app()->params['pageSize'],
             ),
-            'sort' => array('defaultOrder' => 't.title'),
+            'sort' => array('defaultOrder' => 't.tag_name'),
         ));
     }
 
@@ -94,35 +101,19 @@ class TransactionGroup extends CActiveRecord {
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return TransactionGroup the static model class
+     * @return TransactionBudget the static model class
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
     }
 
-    public static function get_group($id) {
-        $value = TransactionGroup::model()->findByAttributes(array('id' => $id));
-        if (empty($value->title)) {
+    public static function get_tag($id) {
+        $value = TransactionBudget::model()->findByAttributes(array('id' => $id));
+        if (empty($value->tag_name)) {
             return null;
         } else {
-            return $value->title;
+            return $value->tag_name;
         }
-    }
-
-    public static function get_members($id) {
-        $model = TransactionGroup::model()->findByPk($id);
-        if (!empty($model->members)) {
-            $exval = explode(',', $model->members);
-            $tags = '';
-            $total = count($exval);
-            //$total_minus = ($total - 1);
-            for ($i = 0; $i < $total; $i++) {
-                $tags .= '<span class="btn btn-xs btn-info">' . TransactionContact::get_contact_name($exval[$i]) . '</span> ';
-            }
-        } else {
-            $tags = null;
-        }
-        return $tags;
     }
 
 }

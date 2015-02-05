@@ -20,7 +20,7 @@ return CMap::mergeArray(
                     ),
                 ),
                 // uncomment the following to enable URLs in path-format
-                'urlManager' => array(
+                /*'urlManager' => array(
                     'urlFormat' => 'path',
                     'showScriptName' => false,
                     'urlSuffix' => '.html',
@@ -30,7 +30,7 @@ return CMap::mergeArray(
                         '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                         '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
                     ),
-                ),
+                ),*/
             ),
             'theme' => 'default',
                 )
