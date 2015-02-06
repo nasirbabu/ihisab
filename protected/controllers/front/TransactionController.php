@@ -55,6 +55,7 @@ class TransactionController extends Controller {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
+        Transaction::checkUser($id);
         $this->layout = false;
         $this->render('view', array(
             'model' => $this->loadModel($id),
@@ -167,6 +168,7 @@ class TransactionController extends Controller {
      * @param integer $id the ID of the model to be updated
      */
     public function actionUpdate($id) {
+        Transaction::checkUser($id);
         $this->layout = false;
         $model = $this->loadModel($id);
 
@@ -227,6 +229,7 @@ class TransactionController extends Controller {
      * @param integer $id the ID of the model to be deleted
      */
     public function actionDelete($id) {
+        Transaction::checkUser($id);
         $this->loadModel($id)->delete();
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -263,6 +266,7 @@ class TransactionController extends Controller {
      * Transaction by TAG
      */
     public function actionTag() {
+        Tag::checkUser($_GET['id']);
         $model = new Transaction('search_tag');
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Transaction']))
@@ -277,6 +281,7 @@ class TransactionController extends Controller {
      * Transaction by ACCOUNT
      */
     public function actionAccount() {
+        Account::checkUser($_GET['id']);
         $model = new Transaction('search_account');
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Transaction']))

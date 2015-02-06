@@ -4,7 +4,7 @@
 $this->pageTitle = Tag::get_tag($_REQUEST['id']) . ' - ' . Yii::app()->name;
 $this->breadcrumbs = array(
     'Transactions' => array('admin'),
-    'Manage',
+    'Tag',
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -25,6 +25,10 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
         pageSetUp();
     }
     ", CClientScript::POS_END);
+$cs = Yii::app()->getClientScript();
+$cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/highcharts.js', CClientScript::POS_END);
+$cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/highcharts-3d.js', CClientScript::POS_END);
+$cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/exporting.js', CClientScript::POS_END);
 ?>
 <script>
     function reload_div()
@@ -37,10 +41,10 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-table fa-fw "></i> 
-            Transactions
+            <i class="fa fa-tag fa-fw "></i> 
+            Tag
             <span>> 
-                Manage
+                <?php echo Tag::get_tag($_REQUEST['id']); ?>
             </span>
         </h1>
     </div>
@@ -64,17 +68,54 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
         </ul>
     </div>
 </div>
-
 <!-- widget grid -->
 <section id="widget-grid" class="">
+    <!-- row -->
+    <div class="row">
+        <article class="col-sm-12">
+            <!-- new widget -->
+            <div class="jarviswidget" id="wid-id-0" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-darken"></i> </span>
+                    <h2>INCOME vs EXPENSE</h2>
+                    <ul class="nav nav-tabs pull-right in" id="myTab">
+                        <li class="active">		
+                            <a data-toggle="tab" href="#s1"><span class="hidden-mobile hidden-tablet">MONTH</span></a>
+                        </li>
+                    </ul>
+                </header>
+                <!-- widget div-->
+                <div class="no-padding">
+                    <!-- widget edit box -->
+                    <div class="jarviswidget-editbox">
+                        test
+                    </div>
+                    <!-- end widget edit box -->
+                    <div class="widget-body">
+                        <!-- content -->
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
+                                <div id="comparisonChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                            </div>
+                            <!-- end s1 tab pane -->
+                        </div>
+                        <!-- end content -->
+                    </div>
+                </div>
+                <!-- end widget div -->
+            </div>
+            <!-- end widget -->
+        </article>
+    </div>
+    <!-- end row -->
     <!-- row -->
     <div class="row">
         <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <!-- Widget ID (each widget will need unique ID)-->
-            <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+            <div class="jarviswidget" id="wid-id-1" data-widget-editbutton="false">
                 <header>
-                    <span class="widget-icon"> <i class="fa fa-tasks"></i> </span>
+                    <span class="widget-icon"> <i class="fa fa-tags"></i> </span>
                     <h2><?php echo Tag::get_tag($_REQUEST['id']); ?></h2>
                     <div class="widget-toolbar">
                         <?php echo CHtml::link('<i class="fa fa-plus"></i>', array('transaction/create'), array('data-placement' => 'bottom', 'title' => '', 'rel' => 'tooltip', 'data-original-title' => 'Add Transaction')); ?>
@@ -184,3 +225,42 @@ Yii::app()->clientScript->registerScript('re-install-date-picker', "
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<script type="text/javascript">
+    $(function () {
+        $('#comparisonChart').highcharts({
+            title: {
+                text: 'COMPARE INCOME vs EXPENSE',
+                x: -20 //center
+            },
+            xAxis: {
+                categories: [<?php echo Account::last_twelve_months(); ?>]
+            },
+            yAxis: {
+                title: {
+                    text: 'Amount'
+                },
+                plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: [{
+                    name: 'Income',
+                    data: [<?php echo Transaction::tagIncomeChart($_REQUEST['id']); ?>]
+                }, {
+                    name: 'Expence',
+                    data: [<?php echo Transaction::tagExpenseChart($_REQUEST['id']); ?>]
+                }]
+        });
+    });
+</script>

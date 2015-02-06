@@ -117,4 +117,13 @@ class TransactionContact extends CActiveRecord {
         }
     }
 
+    public static function checkUser($id) {
+        if (($model = TransactionContact::model()->find(array('condition' => 'user=' . Yii::app()->user->id . ' AND id=' . $id))) === null) {
+            Yii::app()->user->setFlash('error', 'Illegal access detected. Please don\'t try again!');
+            Yii::app()->getController()->redirect(array('/site/index'));
+        } else {
+            return true;
+        }
+    }
+
 }

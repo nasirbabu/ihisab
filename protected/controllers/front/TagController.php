@@ -48,6 +48,7 @@ class TagController extends Controller {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
+        Tag::checkUser($id);
         $this->layout = false;
         $this->render('view', array(
             'model' => $this->loadModel($id),
@@ -100,6 +101,7 @@ class TagController extends Controller {
      */
     public function actionUpdate($id) {
         $this->layout = false;
+        Tag::checkUser($id);
         $model = $this->loadModel($id);
 
         // Uncomment the following line if AJAX validation is needed
@@ -137,6 +139,7 @@ class TagController extends Controller {
      * @param integer $id the ID of the model to be deleted
      */
     public function actionDelete($id) {
+        Tag::checkUser($id);
         $user = Tag::get_user($id);
         if ($user == Yii::app()->user->id) {
             $this->loadModel($id)->delete();

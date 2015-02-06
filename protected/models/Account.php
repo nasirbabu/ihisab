@@ -262,4 +262,13 @@ class Account extends CActiveRecord {
         return number_format($balance, 2, '.', '');
     }
 
+    public static function checkUser($id) {
+        if (($model = Account::model()->find(array('condition' => 'user=' . Yii::app()->user->id . ' AND id=' . $id))) === null) {
+            Yii::app()->user->setFlash('error', 'Illegal access detected. Please don\'t try again!');
+            Yii::app()->getController()->redirect(array('/site/index'));
+        } else {
+            return true;
+        }
+    }
+
 }

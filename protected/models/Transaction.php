@@ -193,6 +193,15 @@ class Transaction extends CActiveRecord {
         return parent::model($className);
     }
 
+    public static function checkUser($id) {
+        if (($model = Transaction::model()->find(array('condition' => 'user=' . Yii::app()->user->id . ' AND id=' . $id))) === null) {
+            Yii::app()->user->setFlash('error', 'Illegal access detected. Please don\'t try again!');
+            Yii::app()->getController()->redirect(array('/site/index'));
+        } else {
+            return true;
+        }
+    }
+
     public static function get_amount($type, $amount) {
         if ($type == 1) {
             $amount = number_format($amount, 2, '.', ',');
@@ -400,6 +409,92 @@ class Transaction extends CActiveRecord {
         for ($t = 1; $t <= 12; $t++) {
             $date = date("Y-m-t", strtotime(date('Y-m-01') . " -$t months"));
             $return .= Transaction::get_worth_specific_month($date) . ",";
+        }
+        return $return;
+    }
+
+    //create chart for specific tag page
+    public static function income_specific_month_tag($date, $tag) {
+        $balance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH("' . $date . '") AND YEAR(created) = YEAR("' . $date . '") AND FIND_IN_SET(' . $tag . ', tag)>0')
+                ->queryScalar();
+
+        $balance = abs($balance);
+        $amount = number_format($balance, 2, '.', '');
+        return $amount;
+    }
+
+    public static function tagIncomeChart($tag) {
+        $return = null;
+        for ($t = 1; $t <= 12; $t++) {
+            $date = date("Y-m-t", strtotime(date('Y-m-01') . " -$t months"));
+            $return .= Transaction::income_specific_month_tag($date, $tag) . ",";
+        }
+        return $return;
+    }
+
+    public static function expense_specific_month_tag($date, $tag) {
+        $balance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH("' . $date . '") AND YEAR(created) = YEAR("' . $date . '") AND FIND_IN_SET(' . $tag . ', tag)>0')
+                ->queryScalar();
+
+        $balance = abs($balance);
+        $amount = number_format($balance, 2, '.', '');
+        return $amount;
+    }
+
+    public static function tagExpenseChart($tag) {
+        $return = null;
+        for ($t = 1; $t <= 12; $t++) {
+            $date = date("Y-m-t", strtotime(date('Y-m-01') . " -$t months"));
+            $return .= Transaction::expense_specific_month_tag($date, $tag) . ",";
+        }
+        return $return;
+    }
+
+    //create chart for specific account page
+    public static function income_specific_month_account($date, $account) {
+        $balance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(2,4) AND MONTH(created) = MONTH("' . $date . '") AND YEAR(created) = YEAR("' . $date . '") AND FIND_IN_SET(' . $account . ', account)>0')
+                ->queryScalar();
+
+        $balance = abs($balance);
+        $amount = number_format($balance, 2, '.', '');
+        return $amount;
+    }
+
+    public static function accountIncomeChart($account) {
+        $return = null;
+        for ($t = 1; $t <= 12; $t++) {
+            $date = date("Y-m-t", strtotime(date('Y-m-01') . " -$t months"));
+            $return .= Transaction::income_specific_month_account($date, $account) . ",";
+        }
+        return $return;
+    }
+
+    public static function expense_specific_month_account($date, $account) {
+        $balance = Yii::app()->db->createCommand()
+                ->select('IFNULL(SUM(amount),0)')
+                ->from('{{transaction}}')
+                ->where('user=' . Yii::app()->user->id . ' AND transaction_type IN(1) AND MONTH(created) = MONTH("' . $date . '") AND YEAR(created) = YEAR("' . $date . '") AND FIND_IN_SET(' . $account . ', account)>0')
+                ->queryScalar();
+
+        $balance = abs($balance);
+        $amount = number_format($balance, 2, '.', '');
+        return $amount;
+    }
+
+    public static function accountExpenseChart($account) {
+        $return = null;
+        for ($t = 1; $t <= 12; $t++) {
+            $date = date("Y-m-t", strtotime(date('Y-m-01') . " -$t months"));
+            $return .= Transaction::expense_specific_month_account($date, $account) . ",";
         }
         return $return;
     }

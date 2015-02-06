@@ -63,6 +63,51 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
 <section id="widget-grid" class="">
     <!-- row -->
     <div class="row">
+        <article class="col-sm-12">
+            <!-- new widget -->
+            <div class="jarviswidget" id="wid-id-0" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-colorbutton="false" data-widget-deletebutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="glyphicon glyphicon-stats txt-color-darken"></i> </span>
+                    <h2>Last Twelve Months</h2>
+                    <ul class="nav nav-tabs pull-right in" id="myTab">
+                        <li class="active">		
+                            <a data-toggle="tab" href="#s1"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">BALANCE</span></a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#s2"><i class="fa fa-dollar"></i> <span class="hidden-mobile hidden-tablet">COMPARISON</span></a>
+                        </li>
+                    </ul>
+                </header>
+                <!-- widget div-->
+                <div class="no-padding">
+                    <!-- widget edit box -->
+                    <div class="jarviswidget-editbox">
+                        test
+                    </div>
+                    <!-- end widget edit box -->
+                    <div class="widget-body">
+                        <!-- content -->
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane fade active in padding-10 no-padding-bottom" id="s1">
+                                <div id="balanceChart" style="height: 400px"></div>
+                            </div>
+                            <!-- end s1 tab pane -->
+                            <div class="tab-pane fade" id="s2">
+                                <div id="comparisonChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                            </div>
+                            <!-- end s2 tab pane -->
+                        </div>
+                        <!-- end content -->
+                    </div>
+                </div>
+                <!-- end widget div -->
+            </div>
+            <!-- end widget -->
+        </article>
+    </div>
+    <!-- end row -->
+    <!-- row -->
+    <div class="row">
         <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <!-- Widget ID (each widget will need unique ID)-->
@@ -110,7 +155,8 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
                                     'type' => 'raw',
                                     'value' => '$data->amount',
                                     'filter' => CHtml::activeTextField($model, 'amount', array('class' => 'form-control')),
-                                    'htmlOptions' => array('style' => "text-align:left;", 'title' => 'Amount'),
+                                    'headerHtmlOptions' => array('style' => "text-align:center;width:150px;"),
+                                    'htmlOptions' => array('style' => "text-align:right;", 'title' => 'Amount'),
                                 ),
                                 array(
                                     'header' => '',
@@ -161,3 +207,127 @@ $cs->registerScriptFile(Yii::app()->theme->baseUrl . '/highchart404/modules/expo
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<script type="text/javascript">
+    // pagefunction	
+    var pagefunction = function () {
+        //console.log("cleared");
+        /* // DOM Position key index //         
+         l - Length changing (dropdown)
+         f - Filtering input (search)
+         t - The Table! (datatable)
+         i - Information (records)
+         p - Pagination (paging)
+         r - pRocessing 
+         < and > - div elements
+         <"#id" and > - div with an id
+         <"class" and > - div with a class
+         <"#id.class" and > - div with an id and class
+         
+         Also see: http://legacy.datatables.net/usage/features
+         */
+        /* BASIC ;*/
+        var responsiveHelper_dt_basic = undefined;
+        var responsiveHelper_datatable_fixed_column = undefined;
+        var responsiveHelper_datatable_col_reorder = undefined;
+        var responsiveHelper_datatable_tabletools = undefined;
+
+        var breakpointDefinition = {
+            tablet: 1024,
+            phone: 480
+        };
+        $('.datatables').dataTable({
+            "sDom": "<'dt-toolbar'<'col-xs-12 col-sm-6'f><'col-sm-6 col-xs-12 hidden-xs'l>r>" +
+                    "t" +
+                    "<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
+            "autoWidth": true,
+            "preDrawCallback": function () {
+                // Initialize the responsive datatables helper once.
+                if (!responsiveHelper_dt_basic) {
+                    responsiveHelper_dt_basic = new ResponsiveDatatablesHelper($('.datatables'), breakpointDefinition);
+                }
+            },
+            "rowCallback": function (nRow) {
+                responsiveHelper_dt_basic.createExpandIcon(nRow);
+            },
+            "drawCallback": function (oSettings) {
+                responsiveHelper_dt_basic.respond();
+            }
+        });
+        /* END BASIC */
+    };
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('#balanceChart').highcharts({
+            chart: {
+                type: 'column',
+                margin: 75,
+                options3d: {
+                    enabled: true,
+                    alpha: 10,
+                    beta: 25,
+                    depth: 70
+                }
+            },
+            title: {
+                text: 'Monthly Balances'
+            },
+            plotOptions: {
+                column: {
+                    depth: 25
+                }
+            },
+            xAxis: {
+                categories: [<?php echo Account::last_twelve_months(); ?>]
+            },
+            yAxis: {
+                opposite: true
+            },
+            series: [{
+                    name: 'Balances',
+                    data: [<?php echo Transaction::accountBalanceChart(); ?>]
+                }]
+        });
+        $('#comparisonChart').highcharts({
+            title: {
+                text: 'COMPARE INCOME vs EXPENSE vs NET WORTH',
+                x: -20 //center
+            },
+            xAxis: {
+                categories: [<?php echo Account::last_twelve_months(); ?>]
+            },
+            yAxis: {
+                title: {
+                    text: 'Amount'
+                },
+                plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: [{
+                    name: 'Income',
+                    data: [<?php echo Transaction::accountIncomeComparisonChart(); ?>]
+                }, {
+                    name: 'Expence',
+                    data: [<?php echo Transaction::accountExpanceComparisonChart(); ?>]
+                }, {
+                    name: 'Balances',
+                    data: [<?php echo Transaction::accountBalanceComparisonChart(); ?>]
+                }, {
+                    name: 'Net Worth',
+                    data: [<?php echo Transaction::accountWorthComparisonChart(); ?>]
+                }]
+        });
+    });
+</script>

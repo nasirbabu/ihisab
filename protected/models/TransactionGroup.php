@@ -100,6 +100,15 @@ class TransactionGroup extends CActiveRecord {
         return parent::model($className);
     }
 
+    public static function checkUser($id) {
+        if (($model = TransactionGroup::model()->find(array('condition' => 'user=' . Yii::app()->user->id . ' AND id=' . $id))) === null) {
+            Yii::app()->user->setFlash('error', 'Illegal access detected. Please don\'t try again!');
+            Yii::app()->getController()->redirect(array('/site/index'));
+        } else {
+            return true;
+        }
+    }
+
     public static function get_group($id) {
         $value = TransactionGroup::model()->findByAttributes(array('id' => $id));
         if (empty($value->title)) {
