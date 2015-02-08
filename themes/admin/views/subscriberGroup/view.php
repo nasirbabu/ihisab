@@ -1,21 +1,26 @@
 <?php
-/* @var $this MassmailController */
-/* @var $model Massmail */
+/* @var $this SubscriberGroupController */
+/* @var $model SubscriberGroup */
+?>
 
-$this->pageTitle = 'Mass Mail - ' . Yii::app()->name;
+<?php
+$this->pageTitle = 'Subscriber Group details - ' . Yii::app()->name;
 $this->breadcrumbs = array(
-    'Mass Mail' => array('admin'),
-    'Manage',
+    'Subscriber Groups' => array('admin'),
+    $model->title,
 );
 ?>
 <div class="widget-box">
     <div class="widget-header">
-        <h5>Manage Mass Mail</h5>
+        <h5>Details Subscriber Group (<?php echo $model->title; ?>)</h5>
         <div class="widget-toolbar">
             <a data-action="settings" href="#"><i class="icon-cog"></i></a>
             <a data-action="reload" href="#"><i class="icon-refresh"></i></a>
             <a data-action="collapse" href="#"><i class="icon-chevron-up"></i></a>
             <a data-action="close" href="#"><i class="icon-remove"></i></a>
+        </div>
+        <div class="widget-toolbar">
+            <?php echo CHtml::link('<i class="icon-pencil"></i>', array('update', 'id' => $model->id), array('data-rel' => 'tooltip', 'title' => 'Edit', 'data-placement' => 'bottom')); ?>
         </div>
         <div class="widget-toolbar">
             <?php echo CHtml::link('<i class="icon-plus"></i>', array('create'), array('data-rel' => 'tooltip', 'title' => 'Add', 'data-placement' => 'bottom')); ?>
@@ -24,20 +29,20 @@ $this->breadcrumbs = array(
     <div class="widget-body">
         <div class="widget-main">
             <?php
-            $this->widget('bootstrap.widgets.TbGridView', array(
-                'id' => 'massmail-grid',
-                'dataProvider' => $model->search(),
-                'filter' => $model,
-                'columns' => array(
-                    'subject',
+            $this->widget('bootstrap.widgets.TbDetailView', array(
+                'data' => $model,
+                'attributes' => array(
+                    'id',
                     array(
-                        'header' => 'Send',
+                        'name' => 'parent',
                         'type' => 'raw',
-                        'value' => 'Massmail::get_mail_send($data->id)',
-                        'htmlOptions' => array('style' => "text-align:right;width:70px;", 'title' => 'Send mail!'),
+                        'value' => SubscriberGroup::get_title($model->parent),
                     ),
+                    'title',
+                    'details',
                     array(
-                        'class' => 'bootstrap.widgets.TbButtonColumn',
+                        'name' => 'status',
+                        'value' => $model->status ? "Active" : "Inactive",
                     ),
                 ),
             ));

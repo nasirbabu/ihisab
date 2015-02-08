@@ -1,6 +1,6 @@
 <?php
 
-class SubscriberController extends BackEndController {
+class SubscriberGroupController extends Controller {
 
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -8,22 +8,13 @@ class SubscriberController extends BackEndController {
      */
     public $layout = '//layouts/column2';
 
-    protected function beforeAction($action) {
-        $access = $this->checkAccess(Yii::app()->controller->id, Yii::app()->controller->action->id);
-        if ($access == 1) {
-            return true;
-        } else {
-            Yii::app()->user->setFlash('error', "You are not authorized to perform this action!");
-            $this->redirect(array('/site/noaccess'));
-        }
-    }
-
     /**
      * @return array action filters
      */
     public function filters() {
         return array(
             'accessControl', // perform access control for CRUD operations
+            'postOnly + delete', // we only allow deletion via POST request
         );
     }
 
@@ -39,42 +30,17 @@ class SubscriberController extends BackEndController {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update', 'admin', 'delete', 'synchronize'),
+                'actions' => array('admin', 'delete', 'create', 'update'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('create', 'update', 'admin', 'delete'),
+                'actions' => array('admin', 'delete'),
                 'users' => array('admin'),
             ),
             array('deny', // deny all users
                 'users' => array('*'),
             ),
         );
-    }
-    
-    /**
-     * Synchronize user from user table
-     */
-    public function actionSynchronize() {
-    	Yii::app()->db->createCommand('SET SESSION group_concat_max_len = 1000000')->execute();
-    	//get all users
-    	$users = User::model()->findAll();
-    	//import from user table
-    	foreach ($users as $key=>$value){
-    		//check this user already exist or not
-    		if (($model = Subscriber::model()->find(array('condition' => 'email="' . trim($value['email']) . '"'))) === null){
-    			$model = new Subscriber;
-                        $model->groups = 1;
-    			$model->full_name = trim($value['name']);
-    			$model->email = trim($value['email']);
-    			$model->created_on = new CDbExpression('NOW()');
-    			$model->confirmed = 1;
-    			$model->enabled = 1;
-    			$model->save();
-    		}
-    	}
-    	Yii::app()->user->setFlash('success', 'Subscriber has been Synchronized successfully!');
-    	$this->redirect(array('admin'));
     }
 
     /**
@@ -92,20 +58,15 @@ class SubscriberController extends BackEndController {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
-        $model = new Subscriber;
+        $model = new SubscriberGroup;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['Subscriber'])) {
-            $model->attributes = $_POST['Subscriber'];
-            //save groups
-            if (is_array(@$_POST['Subscriber']['groups']))
-            	$model->groups = implode(",", $model->attributes['groups']);
-            
+        if (isset($_POST['SubscriberGroup'])) {
+            $model->attributes = $_POST['SubscriberGroup'];
             if ($model->save()) {
-                Yii::app()->user->setFlash('success', 'Subscriber has been created successfully');
-                $this->redirect(array('view', 'id' => $model->id));
+                $this->redirect(array('admin'));
             }
         }
 
@@ -125,20 +86,12 @@ class SubscriberController extends BackEndController {
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['Subscriber'])) {
-            $model->attributes = $_POST['Subscriber'];
-            //save groups
-            if (is_array(@$_POST['Subscriber']['groups']))
-            	$model->groups = implode(",", $model->attributes['groups']);
-            
+        if (isset($_POST['SubscriberGroup'])) {
+            $model->attributes = $_POST['SubscriberGroup'];
             if ($model->save()) {
-                Yii::app()->user->setFlash('success', 'Subscriber has been updated successfully');
-                $this->redirect(array('view', 'id' => $model->id));
+                $this->redirect(array('admin'));
             }
         }
-        
-        if (isset($model->groups))
-        	$model->groups = explode(',', $model->groups);
 
         $this->render('update', array(
             'model' => $model,
@@ -156,18 +109,19 @@ class SubscriberController extends BackEndController {
             $this->loadModel($id)->delete();
 
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-            if (!isset($_GET['ajax']))
+            if (!isset($_GET['ajax'])) {
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-        }
-        else
+            }
+        } else {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     /**
      * Lists all models.
      */
     public function actionIndex() {
-        $dataProvider = new CActiveDataProvider('Subscriber');
+        $dataProvider = new CActiveDataProvider('SubscriberGroup');
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
@@ -177,10 +131,11 @@ class SubscriberController extends BackEndController {
      * Manages all models.
      */
     public function actionAdmin() {
-        $model = new Subscriber('search');
+        $model = new SubscriberGroup('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Subscriber']))
-            $model->attributes = $_GET['Subscriber'];
+        if (isset($_GET['SubscriberGroup'])) {
+            $model->attributes = $_GET['SubscriberGroup'];
+        }
 
         $this->render('admin', array(
             'model' => $model,
@@ -190,21 +145,24 @@ class SubscriberController extends BackEndController {
     /**
      * Returns the data model based on the primary key given in the GET variable.
      * If the data model is not found, an HTTP exception will be raised.
-     * @param integer the ID of the model to be loaded
+     * @param integer $id the ID of the model to be loaded
+     * @return SubscriberGroup the loaded model
+     * @throws CHttpException
      */
     public function loadModel($id) {
-        $model = Subscriber::model()->findByPk($id);
-        if ($model === null)
+        $model = SubscriberGroup::model()->findByPk($id);
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
         return $model;
     }
 
     /**
      * Performs the AJAX validation.
-     * @param CModel the model to be validated
+     * @param SubscriberGroup $model the model to be validated
      */
     protected function performAjaxValidation($model) {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'subscriber-form') {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'subscriber-group-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
