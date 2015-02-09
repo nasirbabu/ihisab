@@ -82,23 +82,16 @@
             </div>
             <!-- #PROJECTS: projects dropdown -->
             <div class="project-context hidden-xs">
-                <span class="label">Projects:</span>
-                <span class="project-selector dropdown-toggle" data-toggle="dropdown">Recent projects <i class="fa fa-angle-down"></i></span>
+                <span class="label">QUICK ACTIONS:</span>
+                <span class="project-selector dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus"></i> ADD</span>
                 <!-- Suggestion: populate this list with fetch and push technique -->
                 <ul class="dropdown-menu">
-                    <li>
-                        <a href="javascript:void(0);">Online e-merchant management system - attaching integration with the iOS</a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);">Notes on pipeline upgradee</a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);">Assesment Report for merchant account</a>
-                    </li>
+                    <li><?php echo CHtml::link('+ TRANSACTION', array('transaction/create'), array('class' => '')); ?></li>
+                    <li><a href="javascript:void(0);">+ ACCOUNT</a></li>
+                    <li><a href="javascript:void(0);">+ BUDGET</a></li>
+                    <li><a href="javascript:void(0);">+ REMINDER</a></li>
                     <li class="divider"></li>
-                    <li>
-                        <a href="javascript:void(0);"><i class="fa fa-power-off"></i> Clear</a>
-                    </li>
+                    <li><a href="javascript:void(0);"><i class="fa fa-power-off"></i> Clear</a></li>
                 </ul>
                 <!-- end dropdown-menu-->
             </div>
@@ -267,25 +260,9 @@
         <!-- #SHORTCUT AREA : With large tiles (activated via clicking user name tag)
                  Note: These tiles are completely responsive, you can add as many as you like -->
         <div id="shortcut">
-            <ul>
-                <li>
-                    <a href="#ajax/inbox.html" class="jarvismetro-tile big-cubes bg-color-blue"> <span class="iconbox"> <i class="fa fa-envelope fa-4x"></i> <span>Mail <span class="label pull-right bg-color-darken">14</span></span> </span> </a>
-                </li>
-                <li>
-                    <a href="#ajax/calendar.html" class="jarvismetro-tile big-cubes bg-color-orangeDark"> <span class="iconbox"> <i class="fa fa-calendar fa-4x"></i> <span>Calendar</span> </span> </a>
-                </li>
-                <li>
-                    <a href="#ajax/gmap-xml.html" class="jarvismetro-tile big-cubes bg-color-purple"> <span class="iconbox"> <i class="fa fa-map-marker fa-4x"></i> <span>Maps</span> </span> </a>
-                </li>
-                <li>
-                    <a href="#ajax/invoice.html" class="jarvismetro-tile big-cubes bg-color-blueDark"> <span class="iconbox"> <i class="fa fa-book fa-4x"></i> <span>Invoice <span class="label pull-right bg-color-darken">99</span></span> </span> </a>
-                </li>
-                <li>
-                    <a href="#ajax/gallery.html" class="jarvismetro-tile big-cubes bg-color-greenLight"> <span class="iconbox"> <i class="fa fa-picture-o fa-4x"></i> <span>Gallery </span> </span> </a>
-                </li>
-                <li>
-                    <a href="#ajax/profile.html" class="jarvismetro-tile big-cubes selected bg-color-pinkDark"> <span class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>My Profile </span> </span> </a>
-                </li>
+            <ul>                                
+                <li><?php echo CHtml::link('<span class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>My Profile</span> </span>', array('/user/view', 'id' => Yii::app()->user->id), array('title' => 'My Profile', 'class' => 'jarvismetro-tile big-cubes selected bg-color-pinkDark')); ?></li>
+                <li><?php echo CHtml::link('<span class="iconbox"> <i class="fa fa-sign-out fa-4x"></i> <span>Logout</span> </span>', array('/site/logout'), array('title' => 'Logout', 'data-action' => 'userLogout', 'data-logout-msg' => 'You can improve your security further after logging out by closing this opened browser', 'class' => 'jarvismetro-tile big-cubes bg-color-orangeDark')); ?></li>
             </ul>
         </div>
         <!-- END SHORTCUT AREA -->

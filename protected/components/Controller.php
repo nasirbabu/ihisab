@@ -78,4 +78,12 @@ class Controller extends CController {
         $model->save();
     }
 
+    public function keepAlive() {
+        if (!Yii::app()->user->isGuest) {
+            User::model()->updateByPk(
+                    Yii::app()->user->id, array('lastvisitDate' => date('Y-m-d H:i:s'))
+            );
+        }
+    }
+
 }

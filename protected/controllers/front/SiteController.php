@@ -4,6 +4,11 @@ class SiteController extends Controller {
 
     public $layout = '//layouts/column2';
 
+    public function afterAction($action) {
+        self::keepAlive();
+        parent::afterAction($action);
+    }
+
     /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.

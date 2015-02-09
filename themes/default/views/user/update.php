@@ -1,21 +1,16 @@
 <?php
 /* @var $this UserController */
 /* @var $model User */
-
-$this->breadcrumbs=array(
-	'Users'=>array('index'),
-	$model->name=>array('view','id'=>$model->id),
-	'Update',
-);
-
-$this->menu=array(
-	array('label'=>'List User', 'url'=>array('index')),
-	array('label'=>'Create User', 'url'=>array('create')),
-	array('label'=>'View User', 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>'Manage User', 'url'=>array('admin')),
-);
+Yii::app()->clientScript->registerScript('search', "
+    pageSetUp();
+", CClientScript::POS_END);
 ?>
-
-<h1>Update User <?php echo $model->id; ?></h1>
-
-<?php $this->renderPartial('_form', array('model'=>$model)); ?>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+        &times;
+    </button>
+    <h4 class="modal-title" id="editProfileLabel">EDIT PROFILE</h4>
+</div>
+<div class="modal-body">
+    <?php $this->renderPartial('_form', array('model' => $model, 'model_profile' => $model_profile,)); ?>
+</div>

@@ -7,6 +7,11 @@ class UserController extends Controller {
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
     public $layout = '//layouts/column2';
+    
+    public function afterAction($action) {
+        self::keepAlive();
+        parent::afterAction($action);
+    }
 
     /**
      * @return array action filters
@@ -30,7 +35,7 @@ class UserController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update'),
+                'actions' => array('create', 'update', 'setting'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -67,8 +72,40 @@ class UserController extends Controller {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
+        User::checkUser($id);
+        $model = $this->loadModel($id);
+        $model_profile = $this->loadModelProfile($id);
+        $model_setting = $this->loadModelSetting($id);
+        $model_access = $this->loadModelAccess($id);
+        //Update settings
+        if (isset($_POST['UserSetting'])) {
+            $model_setting->attributes = $_POST['UserSetting'];
+            if ($model_setting->save()) {
+                Yii::app()->user->setFlash('success', 'Settings was saved successfully.');
+                $this->redirect(array('view', 'id' => $model->id));
+            }
+        }
+        //Change password
+        if (isset($_POST['ChangePassword'])) {
+            $model_access->attributes = $_POST['ChangePassword'];
+            if ($model_access->validate()) {
+                $model_access->password = SHA1($model_access->password);
+                $model_access->verifypassword = SHA1($model_access->verifypassword);
+                $model_access->activation = md5(microtime());
+                if ($model_access->save()) {
+                    Yii::app()->user->setFlash('success', 'Password was saved successfully.');
+                    $this->redirect(array('view', 'id' => $model->id));
+                }
+            }
+        }
+        //First time password field showing null
+        $model_access->password = null;
+
         $this->render('view', array(
-            'model' => $this->loadModel($id),
+            'model' => $model,
+            'model_profile' => $model_profile,
+            'model_setting' => $model_setting,
+            'model_access' => $model_access,
         ));
     }
 
@@ -112,7 +149,7 @@ class UserController extends Controller {
             $model->activation = md5(microtime());
             $model->registerDate = new CDbExpression('NOW()');
             if ($model->validate()) {
-                $model->password = SHA1($model->password);   
+                $model->password = SHA1($model->password);
                 $model->passwordConfirm = SHA1($model->passwordConfirm);
                 //Picture upload script
                 if (@!empty($_FILES['UserProfile']['name']['profile_picture'])) {
@@ -173,19 +210,38 @@ class UserController extends Controller {
      * @param integer $id the ID of the model to be updated
      */
     public function actionUpdate($id) {
+        User::checkUser($id);
+        $this->layout = false;
         $model = $this->loadModel($id);
+        $model_profile = $this->loadModelProfile($id);
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+        $this->performAjaxValidation($model);
+        if (Yii::app()->request->isAjaxRequest) {
+            if (isset($_POST['User'])) {
+                $model->attributes = $_POST['User'];
+                $model_profile->attributes = $_POST['UserProfile'];
+                if ($model->save()) {
+                    $model_profile->save();
+                    Yii::app()->user->setFlash('success', 'Profile was saved successfully.');
+                    Yii::app()->end();
+                }
+            }
+            echo $this->renderPartial('update', array('model' => $model, 'model_profile' => $model_profile,), true, true);
+            Yii::app()->end();
+        }
 
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
-            if ($model->save())
+            if ($model->save()) {
+                $model_profile->save();
+                Yii::app()->user->setFlash('success', 'Profile was saved successfully.');
                 $this->redirect(array('view', 'id' => $model->id));
+            }
         }
 
         $this->render('update', array(
             'model' => $model,
+            'model_profile' => $model_profile,
         ));
     }
 
@@ -235,6 +291,31 @@ class UserController extends Controller {
      */
     public function loadModel($id) {
         $model = User::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    public function loadModelProfile($id) {
+        $model = UserProfile::model()->findByAttributes(array('user_id' => $id));
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    public function loadModelSetting($id) {
+        if (($model = UserSetting::model()->find(array('condition' => 'user=' . $id))) === null) {
+            $model = new UserSetting;
+            $model->user = $id;
+            $model->save();
+        }
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    public function loadModelAccess($id) {
+        $model = ChangePassword::model()->findByPk($id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;

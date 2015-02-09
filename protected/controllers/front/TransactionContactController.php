@@ -7,6 +7,11 @@ class TransactionContactController extends Controller {
      * using two-column layout. See 'protected/views/layouts/column2.php'.
      */
     public $layout = '//layouts/column2';
+    
+    public function afterAction($action) {
+        self::keepAlive();
+        parent::afterAction($action);
+    }
 
     /**
      * @return array action filters

@@ -124,6 +124,15 @@ class User extends CActiveRecord {
         ));
     }
 
+    public static function checkUser($id) {
+        if (($model = User::model()->find(array('condition' => 'id=' . Yii::app()->user->id . ' AND id=' . $id))) === null) {
+            Yii::app()->user->setFlash('error', 'Illegal access detected. Please don\'t try again!');
+            Yii::app()->getController()->redirect(array('/user/view', 'id' => Yii::app()->user->id));
+        } else {
+            return true;
+        }
+    }
+
     public function getGroupName($id) {
         $returnValue = Yii::app()->db->createCommand()
                 ->select('title')
