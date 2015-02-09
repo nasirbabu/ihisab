@@ -56,7 +56,7 @@ $form = $this->beginWidget('CActiveForm', array(
             <?php echo $form->labelEx($model_profile, 'city_id'); ?>
         </label>
         <div class="col-md-8">
-            <?php echo $form->dropDownList($model_profile, 'city_name', CHtml::listData(City::model()->findAll(array('condition' => 'published=1')), 'id', 'city_name'), array('placeholder' => 'City', 'class' => 'select2')); ?>
+            <?php echo $form->dropDownList($model_profile, 'city_id', CHtml::listData(City::model()->findAll(array('condition' => 'published=1')), 'id', 'city_name'), array('placeholder' => 'City', 'class' => 'select2')); ?>
             <?php echo $form->error($model_profile, 'city_id', array('class' => 'text-danger')); ?>
         </div>
     </div>
